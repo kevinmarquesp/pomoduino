@@ -1,21 +1,28 @@
+#include "src/button/button.h"
+
 #define BAUD 115200
 
-#define BLINK_LED 13
-#define DELAY 500
+#define ONOFF_PIN 9 // Button pin #1.
+#define BUTTON_DELAY 120
 
-bool led_state = LOW;
+button_o onoff(ONOFF_PIN);
+
+bool is_onoff_pressed;
 
 void setup(void) {
   Serial.begin(BAUD);
 
-  pinMode(BLINK_LED, OUTPUT);
+	pinMode(ONOFF_PIN, INPUT);
+
+	onoff.on_click([](void){
+		delay(BUTTON_DELAY);
+
+		Serial.println("Hello world!");
+	});
 }
 
 void loop(void) {
-  Serial.println(led_state ? "Led ON" : "Led OFF");
-  digitalWrite(BLINK_LED, led_state);
+	is_onoff_pressed = digitalRead(ONOFF_PIN);
 
-  led_state = not led_state;
-
-  delay(DELAY);
+	onoff.refresh(is_onoff_pressed);
 }
