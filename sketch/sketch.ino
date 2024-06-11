@@ -2,6 +2,7 @@
 #include "src/pomodoro/pomodoro.h"
 
 #define BAUD 115200
+#define BUTTON_DELAY 320
 #define LOGGER
 
 #define ONOFF_BUTTON_PIN 9
@@ -10,10 +11,9 @@
 #define BREAK_LED_PIN 2
 #define LONG_BREAK_INDICATOR_LED_PIN 13
 
-#define BUTTON_DELAY 320
-#define WORK_DURATION 3000
-#define SMALL_BREAK_DURATION 1000
-#define LONG_BREAK_DURATION 3000
+#define WORK_DURATION 1500000
+#define SMALL_BREAK_DURATION 300000
+#define LONG_BREAK_DURATION 900000
 #define MAX_WORK_SESSIONS 3
 
 button_o onoff(ONOFF_BUTTON_PIN);
