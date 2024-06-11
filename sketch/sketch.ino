@@ -38,22 +38,28 @@ void setup(void) {
   pomodoro.on_work([](void) {
     const unsigned short time_left = pomodoro.get_time_left(timer);
 
-    Serial.print("Working: ");
-    Serial.println(time_left);
+    Serial.print("wo\t");
+    Serial.print(time_left);
+
+    Serial.println();
   });
 
   pomodoro.on_small_break([](void) {
     const unsigned short time_left = pomodoro.get_time_left(timer);
 
-    Serial.print("Small break: ");
-    Serial.println(time_left);
+    Serial.print("sb\t");
+    Serial.print(time_left);
+
+    Serial.println();
   });
 
   pomodoro.on_long_break([](void) {
     const unsigned short time_left = pomodoro.get_time_left(timer);
 
-    Serial.print("Long break: ");
-    Serial.println(time_left);
+    Serial.print("lb\t");
+    Serial.print(time_left);
+
+    Serial.println();
   });
 }
 
