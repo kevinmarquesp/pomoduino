@@ -11,6 +11,7 @@ public:
              const unsigned char);
 
   void refresh(unsigned long);
+  void skip(unsigned long);
   void stop(void);
   void start(const unsigned char);
 

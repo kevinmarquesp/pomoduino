@@ -22,18 +22,8 @@ void pomodoro_o::refresh(unsigned long timer) {
                        ? _small_break_duration
                        : _long_break_duration;
 
-  if (timer - _pc > _curr_duration) {
-    if (_exec_between_routine != nullptr)
-      _exec_between_routine();
-
-    if (_state == POMODORO_STATE_LONG_BREAK)
-      _work_counter = 0;
-    else if (_state == POMODORO_STATE_WORK)
-      ++_work_counter;
-
-    _state = this->get_next_state();
-    _pc = timer;
-  }
+  if (timer - _pc > _curr_duration)
+    this->skip(timer);
 
   switch (_state) {
   case POMODORO_STATE_WORK:
@@ -51,6 +41,19 @@ void pomodoro_o::refresh(unsigned long timer) {
       _exec_long_break_routine();
     break;
   }
+}
+
+void pomodoro_o::skip(unsigned long timer) {
+  if (_exec_between_routine != nullptr)
+    _exec_between_routine();
+
+  if (_state == POMODORO_STATE_LONG_BREAK)
+    _work_counter = 0;
+  else if (_state == POMODORO_STATE_WORK)
+    ++_work_counter;
+
+  _state = this->get_next_state();
+  _pc = timer;
 }
 
 void pomodoro_o::stop(void) { _state = POMODORO_STATE_OFF; }
