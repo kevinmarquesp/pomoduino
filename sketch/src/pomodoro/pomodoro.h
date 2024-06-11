@@ -23,6 +23,7 @@ public:
   unsigned char get_state(void);
   unsigned char get_next_state(void);
   unsigned long get_time_left(unsigned long);
+  unsigned long get_curr_duration(void);
 
 private:
   unsigned char _state = POMODORO_STATE_WORK;

@@ -92,3 +92,5 @@ bool pomodoro_o::_is_long_break_time(void) {
 unsigned long pomodoro_o::get_time_left(unsigned long timer) {
   return _curr_duration - (timer - _pc);
 }
+
+unsigned long pomodoro_o::get_curr_duration(void) { return _curr_duration; }
