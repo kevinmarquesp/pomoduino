@@ -1,5 +1,5 @@
 ARDUINO_CLI = arduino-cli
-SKETCH = sketch
+SKETCH = pomoduino
 
 PORT = /dev/ttyUSB0
 BOARD = arduino:avr:uno

@@ -5,7 +5,7 @@
 #define BAUD 115200
 #define BUTTON_DELAY 320
 #define LOGGER
-#define DEBUG
+/* #define DEBUG */
 
 #define ONOFF_BUTTON_PIN 9
 #define SKIP_BUTTON_PIN 8
