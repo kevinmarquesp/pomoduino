@@ -29,8 +29,6 @@ button_o skip_button(SKIP_BUTTON_PIN);
 pomodoro_o pomodoro(WORK_DURATION, SMALL_BREAK_DURATION, LONG_BREAK_DURATION,
                     MAX_WORK_SESSIONS);
 
-inline void log_application_state(void);
-
 void setup(void) {
   Serial.begin(BAUD);
 
@@ -61,20 +59,17 @@ void setup(void) {
     delay(BUTTON_DELAY);
   });
 
-  pomodoro.on_work([](void) {
-    digitalWrite(WORK_LED_PIN, HIGH);
+  pomodoro.on_between([](void) {
+    digitalWrite(WORK_LED_PIN, LOW);
     digitalWrite(BREAK_LED_PIN, LOW);
     digitalWrite(LONG_BREAK_INDICATOR_LED_PIN, LOW);
   });
 
-  pomodoro.on_small_break([](void) {
-    digitalWrite(WORK_LED_PIN, LOW);
-    digitalWrite(BREAK_LED_PIN, HIGH);
-    digitalWrite(LONG_BREAK_INDICATOR_LED_PIN, LOW);
-  });
+  pomodoro.on_work([](void) { digitalWrite(WORK_LED_PIN, HIGH); });
+
+  pomodoro.on_small_break([](void) { digitalWrite(BREAK_LED_PIN, HIGH); });
 
   pomodoro.on_long_break([](void) {
-    digitalWrite(WORK_LED_PIN, LOW);
     digitalWrite(BREAK_LED_PIN, HIGH);
     digitalWrite(LONG_BREAK_INDICATOR_LED_PIN, HIGH);
   });
@@ -89,16 +84,7 @@ void loop(void) {
   skip_button.refresh(is_skip_button_pressed);
   pomodoro.refresh(timer);
 
-  log_application_state();
-}
-
-inline void log_application_state(void) {
 #ifdef LOGGER
-  const unsigned long timer = millis();
-
-  const bool is_onoff_pressed = digitalRead(ONOFF_BUTTON_PIN);
-  const bool is_skip_button_pressed = digitalRead(SKIP_BUTTON_PIN);
-
   Serial.print(is_onoff_pressed);
   Serial.print(is_skip_button_pressed);
   Serial.print("\t");
