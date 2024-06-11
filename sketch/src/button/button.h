@@ -4,7 +4,7 @@
 
 class button_o {
 public:
-  button_o(char);
+  button_o(const char);
 
   void on_click(void (*)(void));
   void refresh(bool);
@@ -13,5 +13,5 @@ private:
   char _pin;
   bool _is_locked = false;
 
-  void (*_exec)(void) = nullptr;
+  void (*_exec_on_click)(void) = nullptr;
 };
