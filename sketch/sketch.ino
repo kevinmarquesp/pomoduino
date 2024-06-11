@@ -2,7 +2,12 @@
 #include "src/pomodoro/pomodoro.h"
 
 #define BAUD 115200
+#define LOGGER
+
 #define ONOFF_PIN 9
+#define WORK_LED_PIN 3
+#define BREAK_LED_PIN 2
+#define LONG_BREAK_INDICATOR_LED_PIN 13
 
 #define BUTTON_DELAY 320
 #define WORK_DURATION 3000
@@ -14,18 +19,18 @@ button_o onoff(ONOFF_PIN);
 pomodoro_o pomodoro(WORK_DURATION, SMALL_BREAK_DURATION, LONG_BREAK_DURATION,
                     MAX_WORK_SESSIONS);
 
-bool is_onoff_pressed;
-unsigned long timer = 0;
+inline void log_application_state(void);
 
 void setup(void) {
   Serial.begin(BAUD);
 
   pinMode(ONOFF_PIN, INPUT);
+  pinMode(WORK_LED_PIN, OUTPUT);
+  pinMode(BREAK_LED_PIN, OUTPUT);
+  pinMode(LONG_BREAK_INDICATOR_LED_PIN, OUTPUT);
 
   onoff.on_click([](void) {
     const unsigned char curr_state = pomodoro.get_state();
-
-    Serial.println(curr_state);
 
     if (curr_state == POMODORO_STATE_OFF)
       pomodoro.start(POMODORO_STATE_WORK);
@@ -36,37 +41,59 @@ void setup(void) {
   });
 
   pomodoro.on_work([](void) {
-    const unsigned short time_left = pomodoro.get_time_left(timer);
-
-    Serial.print("wo\t");
-    Serial.print(time_left);
-
-    Serial.println();
+    digitalWrite(WORK_LED_PIN, HIGH);
+    digitalWrite(BREAK_LED_PIN, LOW);
+    digitalWrite(LONG_BREAK_INDICATOR_LED_PIN, LOW);
   });
 
   pomodoro.on_small_break([](void) {
-    const unsigned short time_left = pomodoro.get_time_left(timer);
-
-    Serial.print("sb\t");
-    Serial.print(time_left);
-
-    Serial.println();
+    digitalWrite(WORK_LED_PIN, LOW);
+    digitalWrite(BREAK_LED_PIN, HIGH);
+    digitalWrite(LONG_BREAK_INDICATOR_LED_PIN, LOW);
   });
 
   pomodoro.on_long_break([](void) {
-    const unsigned short time_left = pomodoro.get_time_left(timer);
-
-    Serial.print("lb\t");
-    Serial.print(time_left);
-
-    Serial.println();
+    digitalWrite(WORK_LED_PIN, LOW);
+    digitalWrite(BREAK_LED_PIN, HIGH);
+    digitalWrite(LONG_BREAK_INDICATOR_LED_PIN, HIGH);
   });
 }
 
 void loop(void) {
-  is_onoff_pressed = digitalRead(ONOFF_PIN);
-  timer = millis();
+  const bool is_onoff_pressed = digitalRead(ONOFF_PIN);
+  const unsigned long timer = millis();
 
   onoff.refresh(is_onoff_pressed);
   pomodoro.refresh(timer);
+
+  log_application_state();
+}
+
+inline void log_application_state(void) {
+#ifdef LOGGER
+  const bool is_onoff_pressed = digitalRead(ONOFF_PIN);
+  const unsigned long timer = millis();
+
+  Serial.print(is_onoff_pressed);
+  Serial.print("\t");
+
+  const unsigned char state = pomodoro.get_state();
+  const unsigned short time_left = pomodoro.get_time_left(timer);
+
+  Serial.print(state == POMODORO_STATE_WORK          ? "wor"
+               : state == POMODORO_STATE_SMALL_BREAK ? "sbr"
+               : state == POMODORO_STATE_LONG_BREAK  ? "lbr"
+               : state == POMODORO_STATE_OFF         ? "off"
+                                                     : "unk");
+  Serial.print("\t");
+  Serial.print(state == POMODORO_STATE_WORK          ? WORK_DURATION
+               : state == POMODORO_STATE_SMALL_BREAK ? SMALL_BREAK_DURATION
+               : state == POMODORO_STATE_LONG_BREAK  ? LONG_BREAK_DURATION
+               : state == POMODORO_STATE_OFF         ? 0
+                                                     : -1);
+  Serial.print("\t");
+  Serial.print(time_left);
+
+  Serial.println();
+#endif
 }
