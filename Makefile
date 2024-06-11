@@ -5,6 +5,9 @@ PORT = /dev/ttyUSB0
 BOARD = arduino:avr:uno
 BAUD = 115200
 
+.PHONY: default
+default: upload serial
+
 .PHONY: compile
 compile:
 	$(ARDUINO_CLI) compile --port $(PORT) --fqbn $(BOARD) $(SKETCH)
